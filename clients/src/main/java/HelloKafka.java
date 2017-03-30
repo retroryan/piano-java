@@ -8,6 +8,7 @@ import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.kstream.KStreamBuilder;
+import services.KafkaHelper;
 
 import java.util.Properties;
 import java.util.Random;
@@ -17,9 +18,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class HelloKafka {
 
-    private static final String bootstrapServer = "localhost:9092";
-    private static final String topic = "RandomNumbers";
-    private static final String applicationId = "hello-kafka-example";
+    public static final String BOOTSTRAP_SERVICE = "localhost:9092";
+    public static final String TOPIC = "RandomNumbers";
+    public  static final String APPLICATION_ID = "hello-kafka-example";
 
     Random random = new Random();
     AtomicInteger atomicInteger = new AtomicInteger();
@@ -29,7 +30,7 @@ public class HelloKafka {
     }
 
     void runHelloKafka() {
-        System.out.println("Running  Hello Kafka Streams");
+        System.out.println("Running Hello Kafka Streams");
 
         Properties kafkaStreamsConfig = getKafkaStreamsConfig();
 
@@ -38,11 +39,11 @@ public class HelloKafka {
         KStreamBuilder streamConsumer = new KStreamBuilder();
 
         KStream<Integer, Integer> stream = streamConsumer
-                .stream(intSerdes, intSerdes, topic);
+                .stream(intSerdes, intSerdes, TOPIC);
 
         stream.foreach((key, value) -> {
                     String formatedRecord = String.format("%d:%d", key, value);
-                    System.out.println("RCRD:" + formatedRecord);
+                    System.out.println("Next Record:" + formatedRecord);
                 });
 
         KafkaStreams streams = new KafkaStreams(streamConsumer, kafkaStreamsConfig);
@@ -50,7 +51,7 @@ public class HelloKafka {
 
         Producer<Integer, Integer> producer = new KafkaProducer<>(kafkaStreamsConfig);
         Runnable task = () -> {
-            producer.send(new ProducerRecord<>(topic, atomicInteger.getAndIncrement(), random.nextInt()));
+            producer.send(new ProducerRecord<>(TOPIC, atomicInteger.getAndIncrement(), random.nextInt()));
         };
 
         Executors
@@ -62,15 +63,22 @@ public class HelloKafka {
         // producer.close();
     }
 
-    private Properties getKafkaStreamsConfig() {
+
+
+    /**
+     * This is the configuration for the basic hello kafka example.  It uses an integer serializer.
+     * @return
+     */
+    public static Properties getKafkaStreamsConfig() {
         Properties streamsConfiguration = new Properties();
-        streamsConfiguration.put(StreamsConfig.APPLICATION_ID_CONFIG, applicationId);
-        streamsConfiguration.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServer);
+        streamsConfiguration.put(StreamsConfig.APPLICATION_ID_CONFIG, APPLICATION_ID);
+        streamsConfiguration.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVICE);
         streamsConfiguration.put(StreamsConfig.KEY_SERDE_CLASS_CONFIG, Serdes.Integer().getClass().getName());
         streamsConfiguration.put(StreamsConfig.VALUE_SERDE_CLASS_CONFIG, Serdes.Integer().getClass().getName());
         streamsConfiguration.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, IntegerSerializer.class);
         streamsConfiguration.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, IntegerSerializer.class);
         return streamsConfiguration;
     }
+
 
 }
