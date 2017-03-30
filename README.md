@@ -10,7 +10,7 @@ sbt tasks exist for running all the demos:
 * sbt setupPiano
 * sbt pianoSparkStreaming
 
-#Verifying kafka
+# Verifying kafka
 
 Text is garrabled because it is being written using an Integer serializer
 
