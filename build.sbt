@@ -10,6 +10,11 @@ lazy val commonSettings = Seq(
 lazy val root = (project in file("."))
   .enablePlugins(PlayJava)
   .settings(commonSettings: _*)
+  .settings(libraryDependencies ++= Seq(
+    "org.webjars" %% "webjars-play" % "2.5.0",
+    "org.webjars" % "bootstrap" % "3.3.4",
+    "org.webjars" % "javascript-piano" % "74c90339ad1d55a72a99fe6e33b35752c15d71c7"
+  ))
 
 lazy val clients = (project in file("clients")).settings(commonSettings: _*)
 
