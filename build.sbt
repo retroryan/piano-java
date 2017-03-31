@@ -15,7 +15,8 @@ lazy val root = (project in file("."))
   .settings(libraryDependencies ++= Seq(
     "org.webjars" %% "webjars-play" % "2.5.0",
     "org.webjars" % "bootstrap" % "3.3.4",
-    "org.webjars" % "javascript-piano" % "74c90339ad1d55a72a99fe6e33b35752c15d71c7"
+    "org.webjars" % "javascript-piano" % "74c90339ad1d55a72a99fe6e33b35752c15d71c7",
+    "io.dropwizard.metrics" % "metrics-core" % "3.2.2"
   ))
   .dependsOn(common)
 

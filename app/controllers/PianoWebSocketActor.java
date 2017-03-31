@@ -15,6 +15,8 @@ import java.util.Properties;
 
 public class PianoWebSocketActor extends UntypedActor {
 
+
+
     public static Props props(ActorRef out) {
         return Props.create(PianoWebSocketActor.class, out);
     }
@@ -32,8 +34,10 @@ public class PianoWebSocketActor extends UntypedActor {
         if (message instanceof String) {
             JsonNode parsedJson = Json.parse((String) message);
             String songId = parsedJson.findValue("songId").toString();
+            //songId has "" around it so we take a substring to remove the quotes before storing in cassandra.
+            String finalSongId = songId.substring(1,songId.length()-1);
             Integer keyCode = parsedJson.findValue("keyCode").asInt(Integer.MAX_VALUE);
-            ProducerRecord producerRecord = new ProducerRecord(KafkaHelper.TOPIC, songId, keyCode);
+            ProducerRecord<String, Integer> producerRecord = new ProducerRecord<>(KafkaHelper.TOPIC, finalSongId, keyCode);
             producer.send(producerRecord);
         }
     }

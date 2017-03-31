@@ -1,17 +1,19 @@
 package services;
 
-import com.datastax.driver.core.Session;
+import com.fasterxml.jackson.databind.JsonNode;
+import play.libs.Json;
+
+import java.util.List;
 
 public class CassandraSetup {
 
     public static void main(String[] args) {
+        //CassandraHelper.getInstance().createPianoKeyspace();
 
-        CassandraHelper cassandraHelper = CassandraHelper.getInstance();
-        Session session = cassandraHelper.getSession();
-        session.execute("CREATE KEYSPACE IF NOT EXISTS demo WITH replication = {'class':'SimpleStrategy', 'replication_factor':1};");
-        session.execute("CREATE TABLE IF NOT EXISTS demo.song (song_id text,  key_codes list<int>, PRIMARY KEY(song_id));");
-        System.out.println("created table for piano data pipeline");
-        cassandraHelper.close();
+        List<String> allPianoSongs = CassandraHelper.getInstance().getAllPianoSongs();
+        JsonNode pianoSongJson = Json.toJson(allPianoSongs);
+        String s = pianoSongJson.toString();
+        System.out.println("s = " + s);
 
     }
 }
