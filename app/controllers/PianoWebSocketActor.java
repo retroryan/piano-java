@@ -37,6 +37,7 @@ public class PianoWebSocketActor extends UntypedActor {
             //songId has "" around it so we take a substring to remove the quotes before storing in cassandra.
             String finalSongId = songId.substring(1,songId.length()-1);
             Integer keyCode = parsedJson.findValue("keyCode").asInt(Integer.MAX_VALUE);
+            System.out.println(songId + " = " + keyCode);
             ProducerRecord<String, Integer> producerRecord = new ProducerRecord<>(KafkaHelper.TOPIC, finalSongId, keyCode);
             producer.send(producerRecord);
         }

@@ -27,6 +27,10 @@ public class HelloPlay extends Controller {
     }
 
     public Result index() {
+        return ok("Hello World");
+    }
+
+    public Result piano() {
         return ok(index.render(webJarAssets));
     }
 

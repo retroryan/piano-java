@@ -1,15 +1,22 @@
+package piano;
+
+import com.datastax.spark.connector.*;
+import com.datastax.spark.connector.util.JavaApiHelper;
 import models.PianoSong;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.serialization.IntegerDeserializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.spark.SparkConf;
 import org.apache.spark.streaming.Duration;
+import org.apache.spark.streaming.Seconds;
 import org.apache.spark.streaming.api.java.JavaDStream;
 import org.apache.spark.streaming.api.java.JavaInputDStream;
 import org.apache.spark.streaming.api.java.JavaStreamingContext;
 import org.apache.spark.streaming.kafka010.ConsumerStrategies;
 import org.apache.spark.streaming.kafka010.KafkaUtils;
 import org.apache.spark.streaming.kafka010.LocationStrategies;
+import scala.Option;
+import scala.collection.immutable.Seq;
 import services.CassandraHelper;
 import services.KafkaHelper;
 
@@ -29,7 +36,7 @@ public class SparkStreaming {
                 .set("spark.sql.warehouse.dir", "spark-warehouse");
 
         // Create the context with 1 seconds batch size
-        JavaStreamingContext jssc = new JavaStreamingContext(sparkConf, new Duration(1000));
+        JavaStreamingContext jssc = new JavaStreamingContext(sparkConf, Seconds.apply(5));
 
         ArrayList<String> topics = new ArrayList<>();
         topics.add(KafkaHelper.TOPIC);
@@ -51,8 +58,14 @@ public class SparkStreaming {
 
         JavaDStream<PianoSong> songStream = directStream.map(consumerRecord -> toPianoSong(consumerRecord));
 
+        ColumnName song_id = new ColumnName("song_id", Option.empty());
+        CollectionColumnName key_codes = new ColumnName("key_codes", Option.empty()).append();
+        List<ColumnRef> collectionColumnNames = Arrays.asList(song_id, key_codes);
+        scala.collection.Seq<ColumnRef> columnRefSeq = JavaApiHelper.toScalaSeq(collectionColumnNames);
+
         javaFunctions(songStream)
                 .writerBuilder("demo", "song", mapToRow(PianoSong.class))
+                .withColumnSelector(new SomeColumns(columnRefSeq))
                 .saveToCassandra();
 
         songStream.print();

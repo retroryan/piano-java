@@ -20,16 +20,16 @@ lazy val root = (project in file("."))
   ))
   .dependsOn(common)
 
-lazy val clients = (project in file("clients")).settings(commonSettings: _*)
-  .dependsOn(common)
-
-lazy val kafkaServer = (project in file("kafka-server")).settings(commonSettings: _*)
-
-lazy val cassandraServer = (project in file("cassandra-server")).settings(commonSettings: _*)
-
-lazy val pianoSparkStreaming = (project in file("piano-spark-streaming"))
+lazy val clients = (project in file("clients"))
   .settings(commonSettings: _*)
   .dependsOn(common)
+
+lazy val kafkaServer = (project in file("kafka-server"))
+  .settings(commonSettings: _*)
+
+lazy val cassandraServer = (project in file("cassandra-server"))
+  .settings(commonSettings: _*)
+
 
 libraryDependencies ++= Seq(
   javaJdbc,
@@ -44,4 +44,4 @@ TaskKey[Unit]("startKafka") := (runMain in Compile in kafkaServer).toTask(" Kafk
 TaskKey[Unit]("helloCassandra") := (runMain in Compile in clients).toTask(" HelloCassandra").value
 TaskKey[Unit]("helloKafka") := (runMain in Compile in clients).toTask(" HelloKafka").value
 TaskKey[Unit]("setupPiano") := (runMain in Compile in common).toTask(" services.CassandraSetup").value
-TaskKey[Unit]("pianoSparkStreaming") := (runMain in Compile in pianoSparkStreaming).toTask(" SparkStreaming").value
+TaskKey[Unit]("pianoSparkStreaming") := (runMain in Compile in clients).toTask(" piano.SparkStreaming").value
