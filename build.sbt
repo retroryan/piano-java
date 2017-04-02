@@ -43,5 +43,5 @@ TaskKey[Unit]("startCassandra") := (runMain in Compile in cassandraServer).toTas
 TaskKey[Unit]("startKafka") := (runMain in Compile in kafkaServer).toTask(" KafkaServer").value
 TaskKey[Unit]("helloCassandra") := (runMain in Compile in clients).toTask(" HelloCassandra").value
 TaskKey[Unit]("helloKafka") := (runMain in Compile in clients).toTask(" HelloKafka").value
-TaskKey[Unit]("setupPiano") := (runMain in Compile in common).toTask(" services.CassandraSetup").value
+TaskKey[Unit]("setupPiano") := (runMain in Compile in clients).toTask(" piano.CassandraSetup").value
 TaskKey[Unit]("pianoSparkStreaming") := (runMain in Compile in clients).toTask(" piano.SparkStreaming").value

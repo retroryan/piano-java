@@ -36,7 +36,7 @@ public class SparkStreaming {
                 .set("spark.sql.warehouse.dir", "spark-warehouse");
 
         // Create the context with 1 seconds batch size
-        JavaStreamingContext jssc = new JavaStreamingContext(sparkConf, Seconds.apply(5));
+        JavaStreamingContext jssc = new JavaStreamingContext(sparkConf, Seconds.apply(1));
 
         ArrayList<String> topics = new ArrayList<>();
         topics.add(KafkaHelper.TOPIC);
@@ -58,6 +58,8 @@ public class SparkStreaming {
 
         JavaDStream<PianoSong> songStream = directStream.map(consumerRecord -> toPianoSong(consumerRecord));
 
+        // When we save key_codes in Cassandra we want to make the column append so it adds new key_codes to the song and not just overwrite the old ones.
+        //This modifies the column mapping so that the column key_codes is mapped to an update instead of insert statement by making it append.
         ColumnName song_id = new ColumnName("song_id", Option.empty());
         CollectionColumnName key_codes = new ColumnName("key_codes", Option.empty()).append();
         List<ColumnRef> collectionColumnNames = Arrays.asList(song_id, key_codes);

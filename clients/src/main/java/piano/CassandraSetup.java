@@ -1,4 +1,6 @@
-package services;
+package piano;
+
+import services.CassandraHelper;
 
 public class CassandraSetup {
 
