@@ -1,7 +1,9 @@
-Kafka Spark Cassandra
----------------------
+Kafka Spark Cassandra Piano
+-----------------------------
 
-A self-contained sample app that combines Kafka, Spark, and Cassandra.
+A self-contained sample app that combines Kafka, Spark, and Cassandra.  
+
+The final app is a web piano that records by streaming the data from the web browser -> play -> kafka -> spark streaming -> cassandra
 
 Start Kafka:
 
@@ -36,6 +38,8 @@ Run `pianoSparkStreaming` to start Spark Streaming
     sbt pianoSparkStreaming
 
 Then checkout the Spark UI: [http://localhost:4040](http://localhost:4040)
+
+Check out the app: [http://localhost:8080/piano](http://localhost:8080/piano)
 
 # Overview of main directories and files
 
